@@ -14,7 +14,8 @@
 body {
   background: var(--bg-deep);
   color: var(--text-primary);
-  font-family: 'Space Mono', monospace;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
   min-height: 100vh;
   overflow: hidden;
   cursor: crosshair;
@@ -172,9 +173,9 @@ body::after {
 }
 
 .card-front h1 {
-  font-family: 'Instrument Serif', serif;
-  font-weight: 400;
-  font-size: 38px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 28px;
   line-height: 1.15;
   margin-bottom: 20px;
   background: linear-gradient(135deg, var(--text-primary), var(--accent-cool));
@@ -184,14 +185,13 @@ body::after {
 }
 
 @media (min-width: 600px) {
-  .card-front h1 { font-size: 46px; }
+  .card-front h1 { font-size: 36px; }
 }
 
 .card-front p {
   font-size: 12px;
   line-height: 1.7;
   color: var(--text-muted);
-  max-width: 280px;
 }
 
 /* Floating indicators */
@@ -286,8 +286,8 @@ dialog.permission-overlay::backdrop {
 }
 
 .permission-overlay h2 {
-  font-family: 'Instrument Serif', serif;
-  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
   font-size: 28px;
 }
 
@@ -305,9 +305,9 @@ dialog.permission-overlay::backdrop {
   border: none;
   padding: 14px 36px;
   border-radius: 100px;
-  font-family: 'Space Mono', monospace;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
   cursor: pointer;
