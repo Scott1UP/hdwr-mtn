@@ -116,41 +116,69 @@ body::after {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  transition: transform 0.12s ease-out;
-  will-change: transform;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s ease,
+    box-shadow 0.35s ease;
+  will-change: transform, opacity;
   backface-visibility: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  overflow: hidden;
 }
 
+.card:active {
+  cursor: grabbing;
+}
+
+.card.swiping {
+  transition: none;
+}
+
+.card.exiting-left {
+  transform: translateX(-100%) scale(0.85) rotateY(-15deg) !important;
+  opacity: 0.6;
+}
+
+.card.exiting-right {
+  transform: translateX(100%) scale(0.85) rotateY(15deg) !important;
+  opacity: 0.6;
+}
+
+/* Prevent interaction during animation */
+.card-stack.animating .card {
+  pointer-events: none;
+}
+
+/* Card layer stacking - position only, no colors */
 .card-back {
-  background: linear-gradient(135deg, rgba(78, 205, 196, 0.12), rgba(155, 93, 229, 0.08));
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(2px);
+  z-index: 1;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
   transform:
     translate(
       calc(var(--tilt-x) * -24px),
       calc(var(--tilt-y) * -24px)
     )
     rotateY(calc(var(--tilt-x) * 4deg))
-    rotateX(calc(var(--tilt-y) * -4deg));
+    rotateX(calc(var(--tilt-y) * -4deg))
+    scale(0.92);
 }
 
 .card-mid {
-  background: linear-gradient(145deg, rgba(255, 107, 53, 0.1), rgba(78, 205, 196, 0.06));
-  border: 1px solid rgba(255,255,255,0.08);
-  backdrop-filter: blur(4px);
+  z-index: 2;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
   transform:
     translate(
       calc(var(--tilt-x) * -10px),
       calc(var(--tilt-y) * -10px)
     )
     rotateY(calc(var(--tilt-x) * 6deg))
-    rotateX(calc(var(--tilt-y) * -6deg));
+    rotateX(calc(var(--tilt-y) * -6deg))
+    scale(0.96);
 }
 
 .card-front {
-  background: linear-gradient(160deg, rgba(15, 15, 25, 0.92), rgba(20, 20, 35, 0.88));
-  border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(20px);
+  z-index: 3;
   box-shadow:
     0 25px 60px rgba(0,0,0,0.5),
     0 0 0 1px rgba(255,255,255,0.05) inset,
@@ -164,34 +192,85 @@ body::after {
     rotateX(calc(var(--tilt-y) * -8deg));
 }
 
-.card-front .card-label {
+/* Fixed z-index for exiting cards - must be below new front */
+.card.exiting-left,
+.card.exiting-right {
+  z-index: 0 !important;
+}
+
+/* Card content styling */
+.card .card-label {
   font-size: 10px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--accent-cool);
   margin-bottom: 16px;
 }
 
-.card-front h1 {
+.card h1 {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
   font-size: 28px;
   line-height: 1.15;
   margin-bottom: 20px;
+}
+
+@media (min-width: 600px) {
+  .card h1 { font-size: 36px; }
+}
+
+.card p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* Card theme colors - fixed to each card */
+.theme-cool {
+  background: linear-gradient(160deg, #0f1a1a, #0a1414);
+  border: 1px solid rgba(78, 205, 196, 0.25);
+}
+
+.theme-cool .card-label {
+  color: var(--accent-cool);
+}
+
+.theme-cool h1 {
   background: linear-gradient(135deg, var(--text-primary), var(--accent-cool));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-@media (min-width: 600px) {
-  .card-front h1 { font-size: 36px; }
+.theme-warm {
+  background: linear-gradient(145deg, #1a130f, #14100a);
+  border: 1px solid rgba(255, 107, 53, 0.25);
 }
 
-.card-front p {
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--text-muted);
+.theme-warm .card-label {
+  color: var(--accent-warm);
+}
+
+.theme-warm h1 {
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-warm));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.theme-violet {
+  background: linear-gradient(135deg, #15101a, #100a14);
+  border: 1px solid rgba(155, 93, 229, 0.25);
+}
+
+.theme-violet .card-label {
+  color: var(--accent-violet);
+}
+
+.theme-violet h1 {
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Floating indicators */
