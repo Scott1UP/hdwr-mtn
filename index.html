@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hardware Motion Demo — Tilt to Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Decorative background layers -->
+<div class="bg-layer bg-grid" aria-hidden="true"></div>
+<div class="bg-layer bg-orbs" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- Decorative floating particles -->
+<div class="particles" id="particles" aria-hidden="true"></div>
+
+<!-- Decorative reticle -->
+<div class="reticle" aria-hidden="true"></div>
+
+<header class="corner-mark">
+  <strong>Motion Demo</strong><br>
+  <span>Tilt or move to explore</span>
+</header>
+
+<aside class="mode-badge" aria-live="polite">
+  <span class="dot" aria-hidden="true"></span>
+  <span id="modeLabel">Initialising…</span>
+</aside>
+
+<main class="scene">
+  <article class="card-stack">
+    <div class="card card-back" aria-hidden="true"></div>
+    <div class="card card-mid" aria-hidden="true"></div>
+    <section class="card card-front">
+      <span class="card-label">Device orientation API</span>
+      <h1>Hardware-driven motion effects</h1>
+      <p>This card stack responds to your device's gyroscope and accelerometer. On desktop, mouse position is used as a fallback. Each layer moves at a different depth multiplier.</p>
+    </section>
+  </article>
+</main>
+
+<footer class="indicators" aria-label="Motion data readout">
+  <figure class="indicator">
+    <data class="indicator-value" id="valX" value="0">0.00</data>
+    <figcaption class="indicator-label">Tilt X</figcaption>
+  </figure>
+  <figure class="indicator">
+    <data class="indicator-value" id="valY" value="0">0.00</data>
+    <figcaption class="indicator-label">Tilt Y</figcaption>
+  </figure>
+  <figure class="indicator">
+    <data class="indicator-value" id="valSource" value="unknown">—</data>
+    <figcaption class="indicator-label">Source</figcaption>
+  </figure>
+</footer>
+
+<dialog class="permission-overlay" id="permOverlay" aria-labelledby="permHeading" aria-describedby="permDesc">
+  <h2 id="permHeading">Enable motion?</h2>
+  <p id="permDesc">This demo uses your device's gyroscope and accelerometer to create depth effects. Tap below to grant permission.</p>
+  <button class="enable-btn" id="enableBtn" type="button">Enable motion</button>
+</dialog>
+
+<script src="js/main.js"></script>
+</body>
+</html>
