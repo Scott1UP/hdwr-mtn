@@ -11,6 +11,7 @@
   const valCompass = document.getElementById('valCompass');
   const compassIndicator = document.querySelector('.indicator-compass');
   const orbs = document.querySelectorAll('.orb');
+  const bgOrbsLayer = document.querySelector('.bg-orbs');
 
   // Current smoothed tilt values (range: -1 to 1)
   let tiltX = 0;
@@ -256,14 +257,15 @@
         orbs[i].style.background = blendColor(weights, colorSources);
       }
 
-      // Blend body background
+      // Set base background on the orb container so it composites
+      // on the same GPU layer as the orbs (avoids seam at extreme tilt)
       const bgSources = {
         N: DIR_PALETTES.N.bg,
         E: DIR_PALETTES.E.bg,
         S: DIR_PALETTES.S.bg,
         W: DIR_PALETTES.W.bg
       };
-      document.body.style.background = blendColor(weights, bgSources);
+      bgOrbsLayer.style.background = blendColor(weights, bgSources);
 
       // Update compass CSS property and indicator
       root.style.setProperty('--compass', compassHeading.toFixed(1));
