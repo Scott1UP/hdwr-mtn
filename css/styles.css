@@ -65,7 +65,6 @@ body::after {
   border-radius: 50%;
   filter: blur(80px);
   opacity: 0.35;
-  transition: background 0.3s ease;
 }
 
 .orb-1 {
