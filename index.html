@@ -68,6 +68,10 @@
     <data class="indicator-value" id="valSource" value="unknown">—</data>
     <figcaption class="indicator-label">Source</figcaption>
   </figure>
+  <figure class="indicator indicator-compass">
+    <data class="indicator-value" id="valCompass" value="--">--</data>
+    <figcaption class="indicator-label">Compass</figcaption>
+  </figure>
 </footer>
 
 <dialog class="permission-overlay" id="permOverlay" aria-labelledby="permHeading" aria-describedby="permDesc">
@@ -75,6 +79,25 @@
   <p id="permDesc">This demo uses your device's gyroscope and accelerometer to create depth effects. Tap below to grant permission.</p>
   <button class="enable-btn" id="enableBtn" type="button">Enable motion</button>
 </dialog>
+
+<div class="compass-widget" id="compassWidget" aria-label="Compass heading control">
+  <svg class="compass-dial" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <!-- Tick marks -->
+    <line x1="50" y1="12" x2="50" y2="16" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <line x1="88" y1="50" x2="84" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <line x1="50" y1="88" x2="50" y2="84" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <line x1="12" y1="50" x2="16" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <!-- Cardinal labels -->
+    <text x="50" y="4" class="compass-label compass-label-n">N</text>
+    <text x="97" y="53" class="compass-label">E</text>
+    <text x="50" y="100" class="compass-label">S</text>
+    <text x="3" y="53" class="compass-label">W</text>
+    <circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.15)"/>
+  </svg>
+  <div class="compass-handle" id="compassHandle"></div>
+  <span class="compass-readout" id="compassReadout">0°</span>
+</div>
 
 <script src="js/main.js"></script>
 </body>

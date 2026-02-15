@@ -8,6 +8,9 @@
   const enableBtn = document.getElementById('enableBtn');
   const particlesContainer = document.getElementById('particles');
   const cardStack = document.querySelector('.card-stack');
+  const valCompass = document.getElementById('valCompass');
+  const compassIndicator = document.querySelector('.indicator-compass');
+  const orbs = document.querySelectorAll('.orb');
 
   // Current smoothed tilt values (range: -1 to 1)
   let tiltX = 0;
@@ -15,6 +18,46 @@
   let targetX = 0;
   let targetY = 0;
   let useGyro = false;
+
+  // Compass state
+  let compassHeading = 0;
+  let targetHeading = 0;
+  let compassAvailable = false;
+
+  // Direction color palettes [R, G, B]
+  const DIR_PALETTES = {
+    N: { orbs: [[78,205,196], [0,180,216], [144,224,239]], bg: [10,15,20] },
+    E: { orbs: [[255,107,53], [255,209,102], [244,132,95]], bg: [20,15,10] },
+    S: { orbs: [[6,214,160], [17,138,178], [255,209,102]], bg: [10,20,15] },
+    W: { orbs: [[155,93,229], [241,91,181], [94,96,206]], bg: [16,10,20] }
+  };
+
+  function directionWeight(heading, center) {
+    let diff = Math.abs(heading - center);
+    if (diff > 180) diff = 360 - diff;
+    return Math.max(0, 1 - diff / 90);
+  }
+
+  function blendColor(weights, colorsByDir) {
+    let r = 0, g = 0, b = 0;
+    for (const dir of ['N', 'E', 'S', 'W']) {
+      r += weights[dir] * colorsByDir[dir][0];
+      g += weights[dir] * colorsByDir[dir][1];
+      b += weights[dir] * colorsByDir[dir][2];
+    }
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+  }
+
+  function getCardinalLabel(heading) {
+    if (heading >= 337.5 || heading < 22.5) return 'N';
+    if (heading < 67.5) return 'NE';
+    if (heading < 112.5) return 'E';
+    if (heading < 157.5) return 'SE';
+    if (heading < 202.5) return 'S';
+    if (heading < 247.5) return 'SW';
+    if (heading < 292.5) return 'W';
+    return 'NW';
+  }
 
   // Swipe state
   let isDragging = false;
@@ -186,6 +229,49 @@
       p.el.style.transform = `translate(${px}px, ${py}px)`;
     }
 
+    // Compass-driven background blending
+    if (compassAvailable) {
+      // Circular lerp (shortest path through 360°)
+      let diff = targetHeading - compassHeading;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      compassHeading += diff * 0.08;
+      compassHeading = ((compassHeading % 360) + 360) % 360;
+
+      const weights = {
+        N: directionWeight(compassHeading, 0),
+        E: directionWeight(compassHeading, 90),
+        S: directionWeight(compassHeading, 180),
+        W: directionWeight(compassHeading, 270)
+      };
+
+      // Blend orb colors
+      for (let i = 0; i < 3; i++) {
+        const colorSources = {
+          N: DIR_PALETTES.N.orbs[i],
+          E: DIR_PALETTES.E.orbs[i],
+          S: DIR_PALETTES.S.orbs[i],
+          W: DIR_PALETTES.W.orbs[i]
+        };
+        orbs[i].style.background = blendColor(weights, colorSources);
+      }
+
+      // Blend body background
+      const bgSources = {
+        N: DIR_PALETTES.N.bg,
+        E: DIR_PALETTES.E.bg,
+        S: DIR_PALETTES.S.bg,
+        W: DIR_PALETTES.W.bg
+      };
+      document.body.style.background = blendColor(weights, bgSources);
+
+      // Update compass CSS property and indicator
+      root.style.setProperty('--compass', compassHeading.toFixed(1));
+      const label = getCardinalLabel(compassHeading);
+      valCompass.textContent = `${Math.round(compassHeading)}° ${label}`;
+      valCompass.value = compassHeading.toFixed(0);
+    }
+
     requestAnimationFrame(animate);
   }
   animate();
@@ -211,14 +297,38 @@
     // Normalise to -1.2…1.2 (clamped at ±25° for extended range)
     targetX = Math.max(-1.2, Math.min(1.2, gamma / 25));
     targetY = Math.max(-1.2, Math.min(1.2, (beta - 45) / 25)); // offset 45° for typical hold angle
+
+    // Compass heading
+    let heading = null;
+    if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
+      // iOS: webkitCompassHeading is 0=North, clockwise
+      if (e.webkitCompassAccuracy > 0 && e.webkitCompassAccuracy < 50) {
+        heading = e.webkitCompassHeading;
+      }
+    } else if (e.alpha !== null) {
+      // Android: convert alpha to compass heading
+      heading = (360 - e.alpha) % 360;
+    }
+
+    if (heading !== null) {
+      targetHeading = heading;
+      if (!compassAvailable) {
+        compassAvailable = true;
+        compassIndicator.style.display = 'flex';
+      }
+    }
   }
 
   function startGyro() {
     useGyro = true;
-    modeLabel.textContent = 'Gyroscope';
+    modeLabel.textContent = 'Gyroscope + Compass';
     valSource.textContent = 'Gyro';
     valSource.value = 'gyroscope';
     window.addEventListener('deviceorientation', handleOrientation);
+    // Try absolute orientation for true-north compass on Android
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation);
+    }
     permOverlay.close();
   }
 
@@ -280,4 +390,72 @@
   }
 
   init();
+
+  // --- Desktop compass widget ---
+  const compassWidget = document.getElementById('compassWidget');
+  const compassHandle = document.getElementById('compassHandle');
+  const compassReadout = document.getElementById('compassReadout');
+  let widgetDragging = false;
+  let widgetPointerId = null;
+
+  function getAngleFromPointer(e) {
+    const rect = compassWidget.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+    // atan2 gives angle from positive X axis; rotate so up (negative Y) = 0°
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    return ((angle % 360) + 360) % 360;
+  }
+
+  function positionHandle(angleDeg) {
+    const rad = (angleDeg - 90) * (Math.PI / 180);
+    const r = 38; // track radius in px (matches SVG circle r=40 scaled to 96px widget)
+    const x = Math.cos(rad) * r;
+    const y = Math.sin(rad) * r;
+    compassHandle.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  function updateFromAngle(angleDeg) {
+    positionHandle(angleDeg);
+    compassReadout.textContent = `${Math.round(angleDeg)}°`;
+    targetHeading = angleDeg;
+    if (!compassAvailable) {
+      compassAvailable = true;
+      compassIndicator.style.display = 'flex';
+    }
+  }
+
+  compassWidget.addEventListener('pointerdown', function (e) {
+    // Ignore if it's a touch event on a device with gyro (widget shouldn't be visible, but just in case)
+    if (useGyro) return;
+    widgetDragging = true;
+    widgetPointerId = e.pointerId;
+    compassWidget.setPointerCapture(e.pointerId);
+    updateFromAngle(getAngleFromPointer(e));
+  });
+
+  document.addEventListener('pointermove', function (e) {
+    if (!widgetDragging || e.pointerId !== widgetPointerId) return;
+    updateFromAngle(getAngleFromPointer(e));
+  });
+
+  document.addEventListener('pointerup', function (e) {
+    if (!widgetDragging || e.pointerId !== widgetPointerId) return;
+    widgetDragging = false;
+    try { compassWidget.releasePointerCapture(e.pointerId); } catch (_) {}
+    widgetPointerId = null;
+  });
+
+  // Hide widget when gyroscope is active
+  function checkCompassVisibility() {
+    if (useGyro) {
+      compassWidget.classList.add('hidden');
+    } else {
+      compassWidget.classList.remove('hidden');
+    }
+  }
+  checkCompassVisibility();
+  setTimeout(checkCompassVisibility, 1200);
 })();
