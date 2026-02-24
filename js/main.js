@@ -218,10 +218,8 @@
     // Update readout
     const xVal = tiltX.toFixed(2);
     const yVal = tiltY.toFixed(2);
-    valX.textContent = xVal;
-    valX.value = xVal;
-    valY.textContent = yVal;
-    valY.value = yVal;
+    if (valX) { valX.textContent = xVal; valX.value = xVal; }
+    if (valY) { valY.textContent = yVal; valY.value = yVal; }
 
     // Move particles with individual depth
     for (const p of particles) {
@@ -270,8 +268,7 @@
       // Update compass CSS property and indicator
       root.style.setProperty('--compass', compassHeading.toFixed(1));
       const label = getCardinalLabel(compassHeading);
-      valCompass.textContent = `${Math.round(compassHeading)}° ${label}`;
-      valCompass.value = compassHeading.toFixed(0);
+      if (valCompass) { valCompass.textContent = `${Math.round(compassHeading)}° ${label}`; valCompass.value = compassHeading.toFixed(0); }
     }
 
     requestAnimationFrame(animate);
@@ -280,9 +277,8 @@
 
   // Mouse fallback (desktop)
   function initMouse() {
-    modeLabel.textContent = 'Mouse input';
-    valSource.textContent = 'Mouse';
-    valSource.value = 'mouse';
+    if (modeLabel) modeLabel.textContent = 'Mouse input';
+    if (valSource) { valSource.textContent = 'Mouse'; valSource.value = 'mouse'; }
     document.addEventListener('mousemove', (e) => {
       targetX = ((e.clientX / window.innerWidth) - 0.5) * 2.4;
       targetY = ((e.clientY / window.innerHeight) - 0.5) * 2.4;
@@ -316,16 +312,15 @@
       targetHeading = heading;
       if (!compassAvailable) {
         compassAvailable = true;
-        compassIndicator.style.display = 'flex';
+        if (compassIndicator) compassIndicator.style.display = 'flex';
       }
     }
   }
 
   function startGyro() {
     useGyro = true;
-    modeLabel.textContent = 'Gyroscope + Compass';
-    valSource.textContent = 'Gyro';
-    valSource.value = 'gyroscope';
+    if (modeLabel) modeLabel.textContent = 'Gyroscope + Compass';
+    if (valSource) { valSource.textContent = 'Gyro'; valSource.value = 'gyroscope'; }
     window.addEventListener('deviceorientation', handleOrientation);
     // Try absolute orientation for true-north compass on Android
     if ('ondeviceorientationabsolute' in window) {

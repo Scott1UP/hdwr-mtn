@@ -97,23 +97,30 @@ body::after {
 
 .card-stack {
   position: relative;
-  width: 340px;
-  height: 440px;
+  width: 480px;
+  height: 270px;
   perspective: 1200px;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 700px) {
   .card-stack {
-    width: 420px;
-    height: 520px;
+    width: 600px;
+    height: 338px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .card-stack {
+    width: 720px;
+    height: 405px;
   }
 }
 
 .card {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
-  padding: 40px 32px;
+  border-radius: 32px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -210,7 +217,7 @@ body::after {
 .card h1 {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 28px;
+  font-size: 64px;
   line-height: 1.15;
   margin-bottom: 20px;
 }
@@ -272,6 +279,114 @@ body::after {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ── Ticket theme ────────────────────────────────── */
+/* Figma: 1200×675, scaled proportionally to card size */
+
+.theme-ticket {
+  background: linear-gradient(121deg, rgb(252, 251, 249) 18%, rgb(241, 237, 228) 97%);
+  border: none;
+  color: #160b2b;                      /* dark base — fixes cream-on-cream */
+  padding: 5% 8%;                      /* proportional to Figma's 32/92 on 675/1200 */
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* Override .card p / .card h1 defaults for ticket */
+.card.theme-ticket p,
+.card.theme-ticket h1 {
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin-bottom: 0;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+}
+
+/* Punch hole mask — cuts real holes in the card */
+.theme-ticket {
+  --punch: 16px;
+  -webkit-mask-image:
+    radial-gradient(circle var(--punch) at 0% 50%, transparent 99%, black 100%),
+    radial-gradient(circle var(--punch) at 100% 50%, transparent 99%, black 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    radial-gradient(circle var(--punch) at 0% 50%, transparent 99%, black 100%),
+    radial-gradient(circle var(--punch) at 100% 50%, transparent 99%, black 100%);
+  mask-composite: intersect;
+}
+
+/* Logo */
+.ticket-logo {
+  width: 22%;
+  height: auto;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Ticket content — vertically centered */
+.ticket-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+  margin-bottom: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.card.theme-ticket .ticket-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: clamp(20px, 3vw, 36px);
+  line-height: 1.15;
+  color: #160b2b;
+  letter-spacing: -0.5px;
+}
+
+.card.theme-ticket .ticket-type {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: clamp(15px, 3.3vw, 24px);
+  line-height: 1.15;
+  color: #d65600;
+  letter-spacing: -0.3px;
+}
+
+.card.theme-ticket .ticket-footer {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(13px, 2.7vw, 19px);
+  line-height: 1.15;
+  color: #221144;
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+}
+
+/* Glyph — bleeds off right edge
+   Figma: 553×940 at left:723 in 1200×675
+   = starts at 60.25% from left, 139% of card height */
+.ticket-glyph {
+  position: absolute;
+  left: 60%;
+  top: 50%;
+  transform: translateY(-47%);
+  height: 140%;
+  width: auto;
+  opacity: 1;
+  pointer-events: none;
+}
+
+@media (min-width: 700px) {
+  .theme-ticket { --punch: 18px; }
+}
+
+@media (min-width: 1000px) {
+  .theme-ticket { --punch: 22px; }
 }
 
 /* Floating indicators */

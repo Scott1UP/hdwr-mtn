@@ -6,13 +6,12 @@
   <title>Hardware Motion Demo — Tilt to Explore</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
 <!-- Decorative background layers -->
-<div class="bg-layer bg-grid" aria-hidden="true"></div>
 <div class="bg-layer bg-orbs" aria-hidden="true">
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
@@ -22,18 +21,7 @@
 <!-- Decorative floating particles -->
 <div class="particles" id="particles" aria-hidden="true"></div>
 
-<!-- Decorative reticle -->
-<div class="reticle" aria-hidden="true"></div>
 
-<header class="corner-mark">
-  <strong>Motion Demo</strong><br>
-  <span>Tilt, hover and swipe to explore</span>
-</header>
-
-<aside class="mode-badge" aria-live="polite">
-  <span class="dot" aria-hidden="true"></span>
-  <span id="modeLabel">Initialising…</span>
-</aside>
 
 <main class="scene">
   <article class="card-stack">
@@ -47,32 +35,18 @@
       <h1>Depth through motion</h1>
       <p>Multiple layers respond at different speeds, creating a convincing sense of depth. Background orbs, grid, particles, and cards each have unique parallax multipliers.</p>
     </section>
-    <section class="card card-front theme-cool">
-      <span class="card-label">Device orientation API</span>
-      <h1>Hardware-driven motion effects</h1>
-      <p>This card stack responds to your device's gyroscope and accelerometer. On desktop, mouse position is used as a fallback.</p>
+    <section class="card card-front theme-ticket">
+      <img src="assets/devcon-logo-full.png" class="ticket-logo" alt="Devcon 8 India">
+      <div class="ticket-body">
+        <h1 class="ticket-name">Anon</h1>
+        <p class="ticket-type">Local Early Bird Ticket</p>
+      </div>
+      <p class="ticket-footer">DEVCON.ORG</p>
+      <img src="assets/dc8-glyph.svg" class="ticket-glyph" alt="" aria-hidden="true">
     </section>
   </article>
 </main>
 
-<footer class="indicators" aria-label="Motion data readout">
-  <figure class="indicator">
-    <data class="indicator-value" id="valX" value="0">0.00</data>
-    <figcaption class="indicator-label">Tilt X</figcaption>
-  </figure>
-  <figure class="indicator">
-    <data class="indicator-value" id="valY" value="0">0.00</data>
-    <figcaption class="indicator-label">Tilt Y</figcaption>
-  </figure>
-  <figure class="indicator">
-    <data class="indicator-value" id="valSource" value="unknown">—</data>
-    <figcaption class="indicator-label">Source</figcaption>
-  </figure>
-  <figure class="indicator indicator-compass">
-    <data class="indicator-value" id="valCompass" value="--">--</data>
-    <figcaption class="indicator-label">Compass</figcaption>
-  </figure>
-</footer>
 
 <dialog class="permission-overlay" id="permOverlay" aria-labelledby="permHeading" aria-describedby="permDesc">
   <h2 id="permHeading">Enable motion?</h2>
